@@ -46,7 +46,7 @@ def naive(tools, requests, num_days):
 			arrivalDay += 1
 
 		if arrivalDay > toDay:
-			print('naive scheduling failed!')
+			raise Exception('Naive scheduling failed, needs more tools than available')
 
 	usedTools = np.amax(tools_per_day, axis = 1)
 
