@@ -1,117 +1,60 @@
 import numpy as np
-import pandas as pd
-pd.options.mode.chained_assignment = None  # default='warn'
 
-def tools_to_df(tools):
-	ids = []
-	amount = []
-	cost = []
-	weight = []
+def tools_to_arr(tools):
+	returnValue = np.zeros((len(tools), 4), dtype = 'int')
 		
 	for tool in tools:
-		ids.append(tool.id)
-		amount.append(tool.amount)
-		cost.append(tool.cost) 
-		weight.append(tool.weight)
+		id = tool.id
+		returnValue[id -1, ] = [tool.id, tool.amount, tool.cost, tool.weight]
+	return returnValue
 
-	df = pd.DataFrame({
-		'id': ids,
-		'amount': amount,
-		'cost': cost,
-		'weight': weight,
-		})
-	return df
-
-def requests_to_df(requests):
-	ids = []
-	locid = []
-	fromDay = []
-	toDay = []
-	numDays = []
-	toolCount = []
-	toolid = []
+def requests_to_arr(requests):
+	returnValue = np.zeros((len(requests), 7), dtype = 'int')
 		
 	for request in requests:
-		ids.append(request.id)
-		locid.append(request.locid)
-		fromDay.append(request.fromDay) 
-		toDay.append(request.toDay)
-		numDays.append(request.numDays)
-		toolid.append(request.toolid) 
-		toolCount.append(request.toolCount)
+		id = request.id
+		returnValue[id -1, ] = [request.id, request.locid, request.fromDay, request.toDay, request.numDays, request.toolid, request.toolCount]
+	return returnValue
 
-	df = pd.DataFrame({
-		'id': ids,
-		'locid': locid,
-		'fromDay': fromDay,
-		'toDay': toDay,
-		'numDays': numDays,
-		'toDay': toDay,
-		'toolid': toolid, 
-		'toolCount': toolCount, 
-		})
-	df['arrivalDay'] = np.nan
-	df['departureDay'] = np.nan
-	return df
+def naive(tools, requests, num_days):
+	arr_requests = requests_to_arr(requests)
+	arr_tools = tools_to_arr(tools)
 
-def calc_tools_per_day(df_tools, df_requests):
-	latest_departure = max(df_requests['departureDay'])
-	num_tools = len(df_tools)
-	
-	returnvalue = np.zeros((num_tools, latest_departure), dtype = 'int')
+	tools = np.zeros((len(arr_tools), 5), dtype = 'int')
+	schedule = np.zeros((len(arr_requests), 6), dtype = 'int')
+	tools_per_day = np.zeros((len(arr_tools), num_days), dtype = 'int')
 
-	for index, row in df_requests.iterrows():
-		arrivalDay = row['arrivalDay']
-		departureDay = row['departureDay']
-		toolId = row['toolid']
-		toolCount = row['toolCount']
+	ind_requests = np.lexsort((-arr_requests[:, 6], arr_requests[:, 2]))
 
-		for day in range(arrivalDay, departureDay):
-			returnvalue[toolId - 1, day -1] += toolCount
+	for i in ind_requests:
+		arrivalDay = arr_requests[i, 2]
+		toolId = arr_requests[i, 5]
+		toolCount = arr_requests[i, 6]
+		toDay = arr_requests[i, 3]
+		numTools = arr_tools[toolId - 1, 1]
 
-	return returnvalue
-
-def plan(tool, requests, num_days):
-	tools_per_day = np.zeros(num_days, dtype = 'int')
-	
-	num_tools = tool['amount']
-	requests.sort_values(by = ['fromDay', 'toolCount'], ascending = [True, False], inplace = True)
-	returnValue = pd.DataFrame()
-
-	for index, row in requests.iterrows():
-		arrivalDay = int(row['fromDay'])
-		departureDay = arrivalDay + int(row['numDays'])
-		toolCount = int(row['toolCount'])
-		
-		while arrivalDay <= int(row['toDay']):
-			used_tools = tools_per_day[arrivalDay - 1]
-			if (used_tools + toolCount) <= num_tools:
-				row['arrivalDay'] = arrivalDay
-				row['departureDay'] = arrivalDay + row['numDays']
+		while arrivalDay <= toDay:
+			used_tools = tools_per_day[toolId - 1, arrivalDay - 1]
+			if (used_tools + toolCount) <= numTools:
+				departureDay = arrivalDay + arr_requests[i, 4]
+				schedule[i, ] = [arr_requests[i, 0], arr_requests[i, 1], arrivalDay, departureDay, toolId, toolCount]
 		
 				for day in range(arrivalDay, departureDay):
-					tools_per_day[day -1] += toolCount
-
-				returnValue.append(row)
+					tools_per_day[toolId - 1, day -1] += toolCount
 				break
 
 			arrivalDay += 1
 
-		if arrivalDay > int(row['toDay']):
-			print('scheduling not succesfull!')
+		if arrivalDay > toDay:
+			print('naive scheduling failed!')
 
-	usedTools = max(tools_per_day)
-	print('Tools used (id: ' + str(tool['id']) + ') = ' + str(usedTools) + ' of allowed ' + str(num_tools))
-	print(returnValue)
-	return returnValue
+	usedTools = np.amax(tools_per_day, axis = 1)
 
-def naive(tools, requests, num_days):
-	df_tools = tools_to_df(tools)	
-	df_requests = requests_to_df(requests)	
+	for j in range(len(arr_tools)):
+		tools[j, 0] = arr_tools[j, 0] 
+		tools[j, 1] = arr_tools[j, 1] 
+		tools[j, 2] = usedTools[j] 
+		tools[j, 3] = arr_tools[j, 2] 
+		tools[j, 4] = arr_tools[j, 3] 
 
-	for index, row in df_tools.iterrows():
-		toolid = row['id']
-		selected = df_requests[df_requests['toolid'] == toolid]
-		plan(row, selected, num_days)
-	
-	return df_tools, df_requests
+	return tools, schedule
