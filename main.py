@@ -19,7 +19,7 @@ if __name__ == "__main__":
     instances = files_in_folder(folder)
    
     # replace instances with single file if you only want to test a single file
-    # instances = ["C:/Git/Combinatorial Optimization/instances/challenge_r100d10_1.txt"]
+    # instances = ['challenge_r100d10_1.txt']
     
     for instance in instances:
         print(instance)
