@@ -3,7 +3,7 @@ import numpy as np
 
 def distance_matrix(coordinate_list):
     n = len(coordinate_list)
-    calcDistance = np.zeros((n,n))
+    calcDistance = np.zeros((n,n), dtype = 'int')
     for i in range(n):
         loc_i = coordinate_list[i]
         for j in range(i+1, n):
