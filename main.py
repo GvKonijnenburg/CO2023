@@ -1,8 +1,8 @@
 
-import file_parsers as fp
+import file_parsers
 import os
-import distance_functions as distance_functions
-import schedulers as schedulers
+import distance_functions
+import schedulers
 
 def files_in_folder(folder):
     returnvalue = []
@@ -23,6 +23,6 @@ if __name__ == "__main__":
     
     for instance in instances:
         print(instance)
-        global_dict, tools, coordinates, requests = fp.file_parser(folder + instance)
+        global_dict, tools, coordinates, requests = file_parsers.file_parser(folder + instance)
         distance_mat = distance_functions.distance_matrix(coordinates)
         scheduled_tools, scheduled_requests = schedulers.naive(tools, requests, global_dict['DAYS'])
