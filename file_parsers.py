@@ -1,6 +1,5 @@
 import instances
-import math
-import numpy as np
+
 def file_parser(inputfile):
     # "Global" Variables
     # days = None
@@ -67,19 +66,4 @@ def file_parser(inputfile):
                                                       toolCount=int(req_type[6])))
                 continue
 
-    return global_dict, tools,coordinates,requests
-
-test = file_parser("/Users/alibenchemsi/Documents/GitHub/CO2023/20 Instances CO2023/challenge_r100d10_1.txt")[2]
-
-def distance_matrix(coordinate_list):
-    n = len(coordinate_list)
-    calcDistance = np.zeros((n,n))
-    for i in range(n):
-        loc_i = coordinate_list[i]
-        for j in range(i+1, n):
-            loc_j = coordinate_list[j]
-            dist = math.floor(math.sqrt(pow(loc_i.x_co - loc_j.x_co, 2) + pow(loc_i.y_co - loc_j.y_co, 2)))
-            calcDistance[i][j] = calcDistance[j][i] = int(dist)
-    return calcDistance
-print(distance_matrix(test))
-
+    return global_dict, tools, coordinates, requests
