@@ -2,6 +2,8 @@ import instances
 
 def file_parser(inputfile):
     # "Global" Variables
+    # DATASET
+    # NAME
     # days = None
     # capacity = None
     # MAX_TRIP_DISTANCE = None
@@ -19,7 +21,13 @@ def file_parser(inputfile):
     with open(inputfile, 'r') as f:
         for line in f:
             line.strip()
-            if "DAYS" in line:
+            if "DATASET" in line:
+                global_dict["DATASET"] = int(line.split(" = ")[1])
+                continue
+            elif "NAME" in line:
+                global_dict["NAME"] = int(line.split(" = ")[1])
+                continue
+            elif "DAYS" in line:
                 global_dict["DAYS"] = int(line.split(" = ")[1])
                 continue
             elif "CAPACITY" in line:
