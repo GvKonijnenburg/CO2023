@@ -3,6 +3,7 @@ import file_parsers
 import os
 import distance_functions
 import schedulers
+import daily_scheduler2
 
 def files_in_folder(folder):
     returnvalue = []
@@ -19,10 +20,12 @@ if __name__ == "__main__":
     instances = files_in_folder(folder)
    
     # replace instances with single file if you only want to test a single file
-    # instances = ['challenge_r100d10_1.txt']
+    instances = ['challenge_r100d10_1.txt']
     
     for instance in instances:
         print(instance)
         global_dict, tools, coordinates, requests = file_parsers.file_parser(folder + instance)
         distance_mat = distance_functions.distance_matrix(coordinates)
         scheduled_tools, scheduled_requests = schedulers.naive(tools, requests, global_dict['DAYS'])
+        daily_scheduler2.main(distance_mat, scheduled_requests, global_dict, 10)
+        #print(scheduled_requests)
