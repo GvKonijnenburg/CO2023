@@ -66,4 +66,11 @@ def file_parser(inputfile):
                                                       toolCount=int(req_type[6])))
                 continue
 
+            elif "DATASET" in line:
+                global_dict["DATASET"] = line.split(" = ")[1].strip()
+                continue
+            elif "NAME" in line:
+                global_dict["NAME"] = line.split(" = ")[1].strip()
+                continue
+
     return global_dict, tools, coordinates, requests
