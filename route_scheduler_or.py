@@ -244,7 +244,11 @@ def generate_output(data, result, debug = False):
 
     return returnvalue
 
-def main(global_dict, distance_matrix, schedule, scheduled_tools, print_output = False):
+def instance_to_filename(instance):
+    return 'solution_or_' + instance.split('_',1)[1]  
+ 
+
+def main(global_dict, distance_matrix, schedule, scheduled_tools, instance, print_output = False):
     local_dict = {}
     local_dict['distance_matrix'] = distance_matrix
     
@@ -287,7 +291,7 @@ def main(global_dict, distance_matrix, schedule, scheduled_tools, print_output =
     output = generate_output(datamodel, result)
     
     #save
-    text_file = open("output.txt", "w")
+    text_file = open(instance_to_filename(instance), "w")
     text_file.write(output)
     text_file.close()
     
