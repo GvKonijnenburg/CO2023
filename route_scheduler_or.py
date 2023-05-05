@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from ortools.constraint_solver import routing_enums_pb2, pywrapcp
+import numpy as np  
 
 def filter_requests(schedule, global_dict, local_dict):
     depot_coordinate = global_dict['DEPOT_COORDINATE']
@@ -131,7 +132,7 @@ def solver(data):
 
     # Create and register a transit cost callback
     def distance_cost_callback(from_index, to_index):
-        distance = distance_callback(from_index, to_index)
+        distance = distance_callback(from_index, to_index).astype(np.int64)
         return distance * data['distance_cost']
 
     transit_cost_callback_index = routing.RegisterTransitCallback(distance_cost_callback)
@@ -142,11 +143,11 @@ def solver(data):
         """Returns the nr of items to pickup at the node."""  
         from_node = manager.IndexToNode(from_index)  
         if from_node == data['depot']:  
-            inventory = data['inventory'][:]  
+            inventory = [int(x) for x in data['inventory']]  
             previous_inventory[:] = inventory  
         else:  
             inventory = previous_inventory[:]  
-        demand = data['requests'][from_node]  
+        demand = int(data['requests'][from_node])  
         if demand > 0:  
             inventory[from_node] += demand  
         else:  
@@ -154,7 +155,7 @@ def solver(data):
             demand = max(0, -inventory[from_node])  
             inventory[from_node] -= demand  
         previous_inventory[:] = inventory  
-        return demand 
+        return demand  
 
 
     request_callback_index = routing.RegisterUnaryTransitCallback(request_callback)
