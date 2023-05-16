@@ -12,6 +12,12 @@ class Vehicle:
     tools_in_vehicle: dict[int, int] = field(default_factory=dict)
     tools_picked_up: dict[int, int] = field(default_factory=dict)
     tools_delivered: dict[int, int] = field(default_factory=dict)
+    order_history: list[int] = field(default_factory=list)
+    pickup_history: dict[int, dict[int, int]] = field(default_factory=dict)  # new field
+    deliveries_history: dict[int, dict[int, int]] = field(default_factory=dict)
+    vehicle_capacity_history: dict[int, dict[int, int,int]] = field(default_factory=dict)
+
+
     def pick_up_tools(self, tool_id, amount):
         self.tools_in_vehicle[tool_id] += amount
         self.tools_picked_up[tool_id] = self.tools_picked_up.get(tool_id, 0) + amount
@@ -20,6 +26,7 @@ class Vehicle:
         for tool_id, amount in self.tools_in_vehicle.items():
             if amount < 0:
                 self.tools_delivered[tool_id] = self.tools_delivered.get(tool_id, 0)
+
     def recalculate_vehicle_load(self, depot):
         new_load = 0
         for tool, amount in self.tools_in_vehicle.items():
@@ -27,10 +34,11 @@ class Vehicle:
                 tool_size = depot.tools[tool].size
                 new_load += abs(amount) * tool_size
         self.vehicle_current_load = new_load
+    def exceeds_capacity(self, max_capacity):
+        return any(load > max_capacity for load in self.capacity_after_each_operation)
+
     def get_leftover_tools(self):
         return {tool_id: -amount for tool_id, amount in self.tools_in_vehicle.items() if amount < 0}
-
-
 def calculate_vehicle_load(newly_loaded_tools,depot):
     load = 0
     for tool_id, amount in newly_loaded_tools.items():
@@ -56,11 +64,11 @@ def update_tools_in_vehicle(vehicle_list):
             else:
                 combined_tools[tool] = amount
     return combined_tools
-def merge_tools_in_vehicle(vehicle1, vehicle2):
+def merge_tools_in_vehicle(vehicle_i, vehicle_j):
     merged_tools = {}
-    for tool, amount in vehicle1.tools_in_vehicle.items():
+    for tool, amount in vehicle_i.tools_in_vehicle.items():
         merged_tools[tool] = merged_tools.get(tool, 0) + amount
-    for tool, amount in vehicle2.tools_in_vehicle.items():
+    for tool, amount in vehicle_j.tools_in_vehicle.items():
         merged_tools[tool] = merged_tools.get(tool, 0) + amount
     return merged_tools
 def update_pd_delvehicle(vehicle_i, vehicle_j):
@@ -81,7 +89,6 @@ def large_vehicles(vehicle_list, init_depot, vehicle_capacity):
     too_large_to_be_combined = [vehicle for vehicle in vehicle_list if vehicle.vehicle_current_load > large_request_vehicle_load]
     vehicle_list = [vehicle for vehicle in vehicle_list if vehicle not in too_large_to_be_combined]
     return vehicle_list, too_large_to_be_combined,smallest_tool
-
 
 def multi_delivery_requests(vehicle_list, vehicle_capacity, distance_cost):
     farms_who_have_requested = {}
@@ -139,6 +146,21 @@ def one_stop_vehicles(order_information, depot, distance_cost, vehicle_operation
                                                vehicle_operation_cost)
         initial_routes.append(vehicle_i)
     return initial_routes
+
+def populate_vehicle_capacity_history(new_vehicle, vehicle_i):
+    farm_id = vehicle_i.farms_visited[1]
+    tools_in_vehicle = vehicle_i.tools_in_vehicle
+    vehicle_current_load = vehicle_i.vehicle_current_load
+    new_vehicle.vehicle_capacity_history[farm_id] = dict(tools_in_vehicle, **{'vehicle_current_load': vehicle_current_load})
+def inventory_tracker(inventory, tool,amount):
+    if not inventory:
+        inventory[tool] = amount
+    elif tool in inventory:
+        inventory[tool] += amount
+    else:
+        inventory[tool] = amount
+
+
 
 
 

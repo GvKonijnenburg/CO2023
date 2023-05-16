@@ -4,6 +4,16 @@ import distance_functions
 import delivery_only_algorithm
 import depot_functions
 
+def flatten_list(lst):
+    result = []
+    for item in lst:
+        if isinstance(item, list):
+            result.extend(flatten_list(item))
+        else:
+            result.append(item)
+    return result
+
+
 #### Functions relevant for with and w/o pick_ups.
 def dispatch_vehicle(vehicle_i, vehicle_j,new_distance, vehicle_current_load, loc_i, loc_j,distance_cost):
     v_id = vehicle_i.v_id
@@ -15,7 +25,8 @@ def dispatch_vehicle(vehicle_i, vehicle_j,new_distance, vehicle_current_load, lo
                  tools_in_vehicle,distance_cost,vehicle_operation_cost)
     new_delivered_tools,new_pick_up_tools = vehicle_functions.update_pd_delvehicle(vehicle_i,vehicle_j)
     new_vehicle.tools_delivered.update(new_delivered_tools)
-    new_vehicle.tools_delivered.update(new_pick_up_tools)
+    vehicle_functions.populate_vehicle_capacity_history(new_vehicle, vehicle_i)
+    vehicle_functions.populate_vehicle_capacity_history(new_vehicle, vehicle_j)
     return new_vehicle
 def extend_route_merger(vehicle_i, vehicle_j,new_distance,new_load,distance_cost):
     v_id = vehicle_i.v_id
@@ -120,10 +131,12 @@ def can_a_delivery_be_added_on_the_first_day(vehicle_i, vehicle_j, distance_matr
 
 ###### Only pick_ups:
 def can_two_routes_be_merged(vehicle_i,vehicle_j,distance_matrix,loc_i,loc_j,max_capacity,max_distance,depot):
+    vehicle_load_from_depot = vehicle_i.vehicle_current_load + vehicle_j.vehicle_current_load
+    # change the above, since when the first is pick_up and the second is a delivery the vehicle can still be merged
+    if vehicle_load_from_depot > max_capacity:
+        return False, None, None,None
     new_tools_in_vehicle = vehicle_functions.merge_tools_in_vehicle(vehicle_i,vehicle_j)
     new_vehicle_load = vehicle_functions.calculate_vehicle_load(new_tools_in_vehicle,depot)
-    if new_vehicle_load > max_capacity:
-        return False, None, None,None
     if not depot_functions.check_inventory(depot,new_tools_in_vehicle):
         return False,None,None,None
     distance_traveled_i = distance_matrix[0][loc_i]
@@ -140,10 +153,10 @@ def dispatch_vehicle_pd(vehicle_i, vehicle_j,new_distance, vehicle_current_load,
     request_fullfilled = vehicle_i.request_fullfilled+vehicle_j.request_fullfilled
     new_vehicle = vehicle_functions.init_vehicle(v_id,new_distance,vehicle_current_load,new_route,request_fullfilled,
                  tools_in_vehicle,distance_cost,vehicle_operation_cost)
+    new_vehicle.order_history.append(vehicle_current_load)
     depot_functions.process_tools(depot, tools_in_vehicle)
     return new_vehicle,depot
-
-def can_we_add_a_location(vehicle_i, vehicle_j, distance_matrix,max_capacity, max_trip_distance, depot):
+def can_we_add_a_location(vehicle_i, vehicle_j, distance_matrix,max_capacity, max_trip_distance, depot,order_list):
     new_tools_in_vehicle = vehicle_functions.merge_tools_in_vehicle(vehicle_i,vehicle_j)
     new_vehicle_load = vehicle_functions.calculate_vehicle_load(new_tools_in_vehicle,depot)
     if new_vehicle_load > max_capacity:
@@ -162,6 +175,46 @@ def can_we_add_a_location(vehicle_i, vehicle_j, distance_matrix,max_capacity, ma
         new_distance += distance_matrix[current][next]
     if new_distance > max_trip_distance:
         return False,None,None,None,None
+    request_fullfilled = vehicle_i.request_fullfilled + vehicle_j.request_fullfilled
+    request_fullfilled = flatten_list(request_fullfilled)
+    print(request_fullfilled)
+    capacity = max_capacity
+    tools_dict = {}  # Dictionary to track the tools
+    vehicle_load_at_stop_i = 0
+    vehicle_capacity_needed = 0
+    for i in range(len(request_fullfilled) - 1, -1, -1):
+        last_visit = request_fullfilled[i]
+        next_visit = request_fullfilled[i-1]
+        first_visit_info = order_list[order_list['route_id'] == last_visit]
+        second_visit_info = order_list[order_list['route_id'] == next_visit]
+        tool_id_1 = int(first_visit_info['tool_id'])
+        tool_count_1 = int(first_visit_info['tool_Count'])
+        tool_id_2 = int(second_visit_info['tool_id'])
+        tool_count_2 = int(first_visit_info['tool_Count'])
+        if len(tools_dict)==0:
+            tools_dict[tool_id_1] = tool_count_1
+            vehicle_load_at_stop_i = abs(tool_count_1) * int(depot.tools[tool_id_1].size)
+            vehicle_capacity_needed = capacity - vehicle_load_at_stop_i
+        #{....... pick,pick}
+        # {....., del, del
+        if tool_count_2 < 0 and tool_count_1 <0:
+            vehicle_load_at_stop_j = abs(tool_count_2) * int(depot.tools[tool_id_1].size)
+            vehicle_capacity_needed -= vehicle_load_at_stop_j
+            if vehicle_capacity_needed < 0:
+                return False, None, None, None, None
+        # before visiting a delivery, there must be space in the vehicle to fullfill it
+        if tool_count_2 > 0:
+            vehicle_load_at_stop_j = abs(tool_count_2) * int(depot.tools[tool_id_1].size)
+            vehicle_capacity_needed -= vehicle_load_at_stop_j
+            if vehicle_capacity_needed < 0:
+                return False, None, None, None, None
+        #{.....,pick,del}
+        if tool_count_2 <0 and tool_count_1 >0:
+            if tool_id_1==tool_id_2:
+                tools_extra = tool_count_2 - tool_count_1
+                tools_extra_size = abs(tools_extra) * int(depot.tools[tool_id_1].size)
+                vehicle_capacity_needed-=tools_extra_size
+                return False, None, None, None, None
     if new_vehicle_load <= max_capacity and new_distance <=max_trip_distance and depot_functions.check_inventory(depot,new_tools_in_vehicle):
         return True, new_distance,new_vehicle_load,merged_points,new_tools_in_vehicle
 

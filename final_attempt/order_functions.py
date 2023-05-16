@@ -29,7 +29,6 @@ def master_order_list (global_schedule):
     master_order_list.insert(index_delivery_day + 1, 'pick_up_day', master_order_list.pop('pick_up_day'))
     master_order_list = master_order_list.drop('numDays', axis=1)
     return master_order_list
-
 def can_order_be_moved(order,master_order_list,day):
     req_id = order[2]
     orders_to_update = master_order_list[master_order_list['req_id'] == req_id]
@@ -43,9 +42,8 @@ def can_order_be_moved(order,master_order_list,day):
                 pick_up_can_be_moved = True
     if delivery_can_be_moved and pick_up_can_be_moved:
         master_order_list.loc[master_order_list['req_id'] == req_id, 'order_day'] += 1
-
-
     return delivery_can_be_moved,pick_up_can_be_moved,master_order_list
+
 def order_mover(order_information, depot, distance_cost, vehicle_operation_cost,master_order_list,vehicle_capacity,day):
     was_an_order_moved = False
     dummy_depot = copy.deepcopy(depot)
@@ -76,13 +74,6 @@ def order_mover(order_information, depot, distance_cost, vehicle_operation_cost,
                 order_must_be_completed_list.append(vehicle_i)
 
     return order_information,master_order_list,was_an_order_moved,order_must_be_completed_list
-
-import pandas as pd
-from itertools import product
-
-import pandas as pd
-from itertools import product
-
 def get_best_combinations(large_order_list, distance_matrix):
     best_combinations = {}
     for req_id, req_group in large_order_list.groupby('req_id'):
@@ -106,13 +97,6 @@ def get_best_combinations(large_order_list, distance_matrix):
                 else:
                     best_combinations[req_id] = [best_combination]
     return best_combinations
-
-
-# # Use the function
-# best_combinations = get_best_combinations(large_orders)
-
-
-
 def net_inventory_required(orders_to_complete):
     delivery_requests = orders_to_complete[orders_to_complete['tool_Count'] > 0]
     pickup_requests = orders_to_complete[orders_to_complete['tool_Count'] < 0]

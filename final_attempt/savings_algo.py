@@ -87,7 +87,7 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
                         locations_in_cut_off_pairs = vehicle_functions.location_mapper(vehicle_list)
             elif route_i[-2] == loc_i and route_j[1] == loc_j:
                 can_we_add_a_farm, new_distance, new_load,new_vehicle_route,new_tools_in_vehicle = route_functions.can_we_add_a_location(vehicle_i,
-                    vehicle_j,distance_matrix,vehicle_capacity,max_trip_distance,master_depot)
+                    vehicle_j,distance_matrix,vehicle_capacity,max_trip_distance,master_depot,updated_orders_to_complete)
                 if can_we_add_a_farm:
                     new_vehicle,master_depot = route_functions.extend_route_merger_pd(vehicle_i, vehicle_j, new_distance, new_load,
                                                                       distance_cost,new_tools_in_vehicle,master_depot,new_vehicle_route)
@@ -96,25 +96,10 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
                         vehicle_list.remove(vehicle_j)
                         vehicle_list.append(new_vehicle)
                         locations_in_cut_off_pairs = vehicle_functions.location_mapper(vehicle_list)
-                        print(new_load)
         daily_routes = vehicle_list + too_large_to_be_combined
         for vehicle in daily_routes:
             leftover_tools = vehicle.get_leftover_tools()
             master_depot.add_tools_to_inventory(leftover_tools)
         final_vehicles[day] = daily_routes
-
-
-    # request_to_check_end_of_day
-
-    # route_i = vehicle_i.farms_visited
-                # route_j = vehicle_j.farms_visited
-                # print(vehicle_i)
-                # print(vehicle_j)
-                # break
-                    # if len(route_i) == 3 and len(route_j) == 3:
-                    #     print(vehicle_i)
-                    #     print(vehicle_j)
-                    #     break
-            #implement the rest now
 
     return final_vehicles

@@ -52,16 +52,13 @@ def flatten(nested_list):
         else:
             result.append(i)
     return result
-
 for instance in instances:
-    print(instance)
     global_dict, tools, coordinates, requests = file_parser.new_file_parser(folder + "/" + instance)
     # Variables From Parser
     dataset = global_dict['DATASET']
     name = global_dict['NAME']
     depot_loc = global_dict['DEPOT_COORDINATE']
     vehicle_capacity = global_dict['CAPACITY']
-    print(vehicle_capacity)
     max_distance = global_dict['MAX_TRIP_DISTANCE']
     # Variables for Cost
     vehicle_cost = global_dict['VEHICLE_COST']
@@ -79,14 +76,10 @@ for instance in instances:
     order_vehicle_information = order_functions.order_vehicle_information(master_order_list, init_depot, distance_mat)
     savings_algo_routes = savings_algo.savings_algo(order_vehicle_information, distance_mat, init_depot, vehicle_capacity, max_distance,
                                      vehicle_operation_cost,distance_cost)
-    print(savings_algo_routes)
     for key in savings_algo_routes:
         for vehicle in savings_algo_routes[key]:
             vehicle.request_fullfilled = flatten(vehicle.request_fullfilled)
     print_solution(dataset, name, savings_algo_routes, instance)
-    print(vehicle_capacity)
-    print('cap')
-
     break
     #
 

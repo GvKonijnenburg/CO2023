@@ -37,8 +37,6 @@ def compute_savings_matrix_for_vehicles(distance_matrix, vehicle_list,distance_c
 
 def initial_delivery_routes(order_information, depot, distance_cost, vehicle_operation_cost):
     initial_routes = []
-    print('start of this loop')
-    print(depot)
     for order in order_information.itertuples():
         tool_id = order[6]
         amount_requested = order[7]
@@ -57,8 +55,6 @@ def initial_delivery_routes(order_information, depot, distance_cost, vehicle_ope
             depot_functions.process_tools(depot,tools_in_vehicle)
             initial_routes.append(vehicle_i)
         else:
-            print('check how much inventory')
-            print(depot)
             raise ValueError(f"Function:initial_delivery_routes day 1")
     return initial_routes,depot
 
@@ -70,7 +66,6 @@ def first_day_algo(orders_day_1,depot,distance_cost,vehicle_operation_cost,maste
     vehicle_list, large_requests,smallest_tool = vehicle_functions.large_vehicles(single_dispatch_vehicles, depot, vehicle_capacity)
     cut_off_pairs = compute_savings_matrix_for_vehicles(distance_matrix, vehicle_list,distance_cost)
     locations_in_cut_off_pairs = vehicle_functions.location_mapper(vehicle_list)
-    print(vehicle_list)
     for pair in cut_off_pairs:
         loc_i, loc_j,savings = pair[0], pair[1],pair[2]
         vehicle_i = locations_in_cut_off_pairs[loc_i]
