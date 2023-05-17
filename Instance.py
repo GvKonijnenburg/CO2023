@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from Scheduler2 import *
+from Saving import *
 import pandas as pd
-import math
+import os,glob
 
 
 class Instance:
@@ -161,14 +162,38 @@ class Tool(object):
 #     vehicle_day_cost: int
 #     distance_cost: int
 
+def writeSolution(instance, daily_trips, solution_name):
+    file = open(solution_name, 'w')
+    file.write("DATASET = " + instance.DATASET + "\n")
+    file.write("NAME = " + instance.NAME + "\n\n")
+
+    for day, trips in sorted(daily_trips.items()):
+        file.write("DAY = {}\n ".format(day))
+        file.write("NUMBER_OF_VEHICLES = {}\n".format(len(trips)))
+        for i, t in enumerate(trips):
+            file.write('{}\tR\t'.format(i + 1) + '\t'.join(str(req) for req in t.trip) + '\n')
+        file.write('\n')
+    file.close()
+
 if __name__ == "__main__":
-    instance = Instance("instances/challenge_r100d10_5.txt")
-    # scheduler = Scheduler(instance)
-    # for r in scheduler.schedule.scheduleDays[9].pickups:
-    #     print(r.ID)
-    sche = make_schedule_ILP(instance)
-    for i in sorted(sche.scheduleDaily):
-        print(sche.scheduleDaily[i])
-    print(sche.max_daily_use)
-    print(instance.requestsDf)
-    print(instance.distanceMatrix)
+    for filename in os.listdir('instances/'):
+        instance = Instance(os.path.join(os.getcwd(), str("instances/" + filename)))
+    #     instance = Instance("instances/challenge_r500d25_4.txt")
+        # scheduler = Scheduler(instance)
+        # for r in scheduler.schedule.scheduleDays[9].pickups:
+        #     print(r.ID)
+        sche = make_schedule_ILP(instance,True)
+        for i in sorted(sche.scheduleDaily):
+            print("day", i, "schedule:", sche.scheduleDaily[i])
+        print(sche.max_daily_use)
+        print(instance.requestsDf)
+        print(instance.distanceMatrix)
+
+        savinglist = calculate_saving_matrix(instance)
+        daily_trips = make_route_on_saving(sche)
+        # print(savinglist)
+        for d,s in sorted(daily_trips.items()):
+            print('DAY',d)
+            for t in range(len(s)):
+                print(s[t].trip)
+        writeSolution(instance,daily_trips, str("solution_"+filename))

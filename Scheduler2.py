@@ -12,6 +12,7 @@ class Schedule:
         for (req, deliveryDay,pickupDay) in self.scheduledRequests:
             daily_inventory_used[req.toolID - 1][deliveryDay -1 : pickupDay-1] += req.toolCount
 
+        print(daily_inventory_used)
         for t, tool in enumerate(daily_inventory_used):
             self.max_daily_use[t] = max(tool)
 
@@ -44,8 +45,10 @@ def create_model(days, toolAmount, requestsDf):
     model.y = pyo.Var(model.i, model.j, domain=pyo.Binary)  # pickup req i on day j
 
     # helper variables
+    def delivery_interval(model, i):
+        return (model.fromDay[i], model.toDay[i])
     model.deliveryDay = pyo.Var(model.i, domain=pyo.NonNegativeIntegers,
-                            bounds=lambda model, i: (model.fromDay[i], model.toDay[i]))
+                            bounds=delivery_interval)
     model.toolEndOfDay = pyo.Var(range(days+1), domain=pyo.NonNegativeIntegers, bounds=(0, toolAmount))
 
     # for each req delivery only once
@@ -62,6 +65,14 @@ def create_model(days, toolAmount, requestsDf):
         return model.deliveryDay[i] == sum(j*model.x[i,j] for j in model.j)
     model.rightDeliveryDay = pyo.Constraint(model.i, rule=delivery_on_right_day)
 
+    # def delivery_lb(model,i):
+    #     return model.fromDay[i] <= sum(j*model.x[i,j] for j in model.j)
+    # model.rightDeliveryDay = pyo.Constraint(model.i, rule=delivery_lb)
+    #
+    # def delivery_ub(model,i):
+    #     return model.toDay[i] >= sum(j*model.x[i,j] for j in model.j)
+    # model.rightDeliveryDay = pyo.Constraint(model.i, rule=delivery_lb)
+
     def pickup_on_right_day(model,i):
         return model.deliveryDay[i] + model.numDays[i] == sum(j*model.y[i,j] for j in model.j)
     model.rightPickUpDay = pyo.Constraint(model.i, rule=pickup_on_right_day)
@@ -72,7 +83,11 @@ def create_model(days, toolAmount, requestsDf):
             model.toolEndOfDay[j-1]-sum(model.toolAmountRequest[i]*(model.x[i,j]-model.y[i,j]) for i in model.i)
     model.inventory = pyo.Constraint(model.j, rule=inventoryDay)
 
-    model.objective = pyo.Objective(expr=model.toolEndOfDay[days], sense=pyo.minimize)
+    def maxdeli(model, j):
+        return sum(model.toolAmountRequest[i]*(model.x[i,j]) for i in model.i) <= model.toolEndOfDay[j-1]
+    model.maxdeli = pyo.Constraint(model.j, rule=maxdeli)
+
+    model.objective = pyo.Objective(expr=model.toolEndOfDay[0], sense=pyo.minimize)
     return model
 
 def make_schedule_ILP(instance, log=False):
@@ -96,6 +111,7 @@ def make_schedule_ILP(instance, log=False):
                     print("day:", d, "maxTools:", toolAmount, "toolUsed:", model.toolEndOfDay[d].value)
                 print("total tool used:", pyo.value(model.objective))
             for i in model.i:
+                # deliveryDay = int(sum(j*model.x[i,j].value for j in model.j))
                 deliveryDay = int(model.deliveryDay[i].value)
                 request = instance.requests[i - 1]
                 schedule.scheduledRequests.append((request, deliveryDay, deliveryDay+request.numDays))
