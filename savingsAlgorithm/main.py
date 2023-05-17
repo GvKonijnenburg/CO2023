@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
         savings_algo_routes = savings_algorithm.savings_algo(order_vehicle_information, distance_mat, init_depot,
                                                         vehicle_capacity, max_distance,
-                                                        vehicle_operation_cost, distance_cost,scheduled_requests)
+                                                        vehicle_operation_cost, distance_cost,scheduled_requests)        # print('check here')
 
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)

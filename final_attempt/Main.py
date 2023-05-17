@@ -53,7 +53,7 @@ def flatten(nested_list):
             result.append(i)
     return result
 for instance in instances:
-    global_dict, tools, coordinates, requests = file_parser.new_file_parser(folder + "/" + instance)
+    global_dict, tools, coordinates, requests = file_parser.new_file_parser(folder + "/" + 'challenge_r100d10_2.txt')
     # Variables From Parser
     dataset = global_dict['DATASET']
     name = global_dict['NAME']
@@ -80,6 +80,7 @@ for instance in instances:
         for vehicle in savings_algo_routes[key]:
             vehicle.request_fullfilled = flatten(vehicle.request_fullfilled)
     print_solution(dataset, name, savings_algo_routes, instance)
+
     break
     #
 

@@ -1,4 +1,7 @@
 import distance_functions
+import vehicle_functions
+import pandas as pd
+
 def can_two_deliveries_be_merged(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j, max_capacity, max_distance):
     vehicle_i_current_load = vehicle_i.vehicle_cumalative_load
     vehicle_j_current_load = vehicle_j.vehicle_cumalative_load
@@ -70,4 +73,43 @@ def can_delivery_be_added_to_existing_route(vehicle_i, vehicle_j, distance_matri
             return False, None, None, None
         else:
             return True, new_distance, vehicle_capacity_after_merge, new_route
+def can_a_pick_up_and_delivery_be_paired(vehicle_i, vehicle_j, vehicle_capacity,max_distance,depot,daily_order_data_frame,distance_matrix,master_depot):
+    requests_instead_of_farms = []
+    for vehicle in [vehicle_i, vehicle_j]:
+        requests_instead_of_farms.append(vehicle.tools_in_vehicle)
+    max_amount_of_tools_required = get_max_positive_change(requests_instead_of_farms)
+    extra_load = 0
+    if len(max_amount_of_tools_required) > 0:
+        for tool_id, tool_amount in max_amount_of_tools_required.items():
+            if tool_id in depot.tools:
+                tool_size = depot.tools[tool_id].size
+                extra_load += tool_size*tool_amount
+    if vehicle_i.vehicle_cumalative_load + extra_load > vehicle_capacity:
+        return False,None,None
+    distance_traveled_i = distance_matrix[0][vehicle_i.farms_visited[1]]
+    distance_traveled_j = distance_matrix[0][vehicle_j.farms_visited[1]]
+    distance_between_farms = distance_matrix[vehicle_i.farms_visited[1]][vehicle_j.farms_visited[1]]
+    new_distance = distance_traveled_i + distance_traveled_j + distance_between_farms
+    if new_distance > max_distance:
+        return False, None,None
+    new_tools_in_vehicle = vehicle_functions.update_tools_in_vehicle([vehicle_i,vehicle_j])
+    for tool_id, amount_requested in new_tools_in_vehicle.items():
+        if not master_depot.inventory_check(tool_id, amount_requested):
+            return False, None,None
+
+    return True, new_distance,new_tools_in_vehicle
+
+
+
+def get_max_positive_change(amount_requested):
+    totals = {}
+    max_totals = {}
+    for d in amount_requested:
+        for key, value in d.items():
+            totals[key] = totals.get(key, 0) + value
+            if totals[key] > max_totals.get(key, 0):
+                max_totals[key] = totals[key]
+    return max_totals
+
+
 

@@ -65,6 +65,45 @@ def initial_pick_up_and_delivery_routes(order_information,depot, distance_cost, 
         initial_routes.append(vehicle_i)
     return initial_routes
 
+# def large_pick_up_and_delivery_matcher(large_order_list,max_distance,distance_matrix,depot,vehicle_operation_cost,distance_cost):
+#     print(large_order_list)
+#     # order_list_to_combine = order_functions.get_best_combinations(large_order_list,distance_matrix)
+#     order_ids_fullfilled= []
+#     new_vehicle_list = []
+#     large_delivery_list = []
+#     for delivery, pickup in order_list_to_combine:
+#         pickup_loc = pickup[2]
+#         delivery_loc = delivery[2]
+
+
+        # distance_between_points = distance_functions.calculate_distance_between_points(distance_matrix, delivery_loc, pickup_loc)
+        # distance_pick_up_to_depot = distance_functions.calculate_distance_between_points(distance_matrix, depot.loc, pickup_loc)
+        # distance_delivery_to_depot = distance_functions.calculate_distance_between_points(distance_matrix, depot.loc, delivery_loc)
+        # new_distance = distance_pick_up_to_depot + distance_between_points + distance_delivery_to_depot
+        # if new_distance <= max_distance:
+        #     v_id = pickup[1]
+        #     tool_id_pick_up = pickup[5]
+        #     tool_count_pick_up = pickup[6]
+        #     tool_id_delivery = delivery[5]
+        #     tool_count_delivery = delivery[6]
+        #     distance_traveled = new_distance
+        #     tools_in_vehicle = {}
+        #     tools_in_vehicle[tool_id_pick_up] = tools_in_vehicle.get(tool_id_pick_up, 0) + tool_count_pick_up
+        #     tools_in_vehicle[tool_id_delivery] = tools_in_vehicle.get(tool_id_delivery, 0) + tool_count_delivery
+        #     vehicle_load = sum(depot.tools[tool_id].size * tool_count for tool_id, tool_count in tools_in_vehicle.items())
+        #     vehicle_route = [depot.loc, pickup[2],delivery[2], depot.loc]
+        #     request_fullfilled = [pickup[-1],delivery[-1]]
+        #     vehicle_operation_cost = vehicle_operation_cost
+        #     new_vehicle = vehicle_functions.init_vehicle(v_id, distance_traveled, vehicle_load, vehicle_route, request_fullfilled,
+        #                      tools_in_vehicle, distance_cost, vehicle_operation_cost)
+        #     new_vehicle.large_pick_ups()
+        #     new_vehicle_list.append(new_vehicle)
+        #     order_ids_fullfilled.append(pickup[-1])
+        #     order_ids_fullfilled.append(delivery[-1])
+        # else:
+        #     print('if initial distance to high implement or else all the large request are fullfilled ')
+
+
 
 
 def is_it_word_merging_routes(vehicle_i, vehicle_j, new_vehicle):

@@ -126,6 +126,7 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                                                                       long_road, distance_cost)
                     dispatch_list.append(linked_vehicle)
 
+
     #### Dealing with left over pairs. I assume that the distance is never equal
     # if distance_cost > vehicle_operation_cost: ## Implement this later, since this requires more thinking than just merging by load
     #     for vehicle in vehicle_list:

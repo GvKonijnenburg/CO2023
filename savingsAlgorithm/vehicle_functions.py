@@ -1,4 +1,6 @@
+import heapq
 from dataclasses import dataclass, field
+import distance_functions
 @dataclass
 class Vehicle:
     v_id: int
@@ -27,7 +29,7 @@ class Vehicle:
 def update_tools_in_vehicle(vehicle_list):
     new_tool_list = {}
     for vehicle in vehicle_list:
-        for tool, amount in vehicle.tools_delivered.items():
+        for tool, amount in vehicle.tools_in_vehicle.items():
             if tool in new_tool_list:
                 new_tool_list[tool] += amount
             else:
@@ -53,3 +55,7 @@ def large_vehicles(vehicle_list, init_depot, vehicle_capacity):
     too_large_to_be_combined = [vehicle for vehicle in vehicle_list if vehicle.vehicle_cumalative_load > large_request_vehicle_load]
     vehicle_list = [vehicle for vehicle in vehicle_list if vehicle not in too_large_to_be_combined]
     return vehicle_list, too_large_to_be_combined,smallest_tool
+
+
+
+
