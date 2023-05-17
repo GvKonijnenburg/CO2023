@@ -5,18 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a616b68b-8aa5-4345-9bc6-f9fd3e58d987" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/constraint_checkers.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/delivery_only_algorithm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/distance_functions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/file_parser.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/global_schedule.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/instances.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/inventory_management.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/order_functions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/routing_functions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/savings_algorithm.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/savingsAlgorithm/vehicle_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/constraint_checkers.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/constraint_checkers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/delivery_only_algorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/delivery_only_algorithm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/instances.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/instances.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/routing_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/routing_functions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/savings_algorithm.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/savings_algorithm.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/savingsAlgorithm/vehicle_functions.py" beforeDir="false" afterPath="$PROJECT_DIR$/savingsAlgorithm/vehicle_functions.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -266,7 +261,7 @@
       <workItem from="1682928184615" duration="192865000" />
       <workItem from="1683644908308" duration="15877000" />
       <workItem from="1683708410797" duration="283264000" />
-      <workItem from="1684290042346" duration="34704000" />
+      <workItem from="1684290042346" duration="41349000" />
     </task>
     <servers />
   </component>
@@ -300,7 +295,7 @@
     <SUITE FILE_PATH="coverage/CO2023$solution.coverage" NAME="solution Coverage Results" MODIFIED="1681136560985" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TRAN ENHANCED" />
     <SUITE FILE_PATH="coverage/CO2023$InstanceCVRPTWUI.coverage" NAME="InstanceCVRPTWUI Coverage Results" MODIFIED="1681139788723" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TRAN ENHANCED" />
     <SUITE FILE_PATH="coverage/CO2023$Based_on_solution_file.coverage" NAME="Based_on_solution_file Coverage Results" MODIFIED="1684143621216" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Based_on_solution_file" />
-    <SUITE FILE_PATH="coverage/CO2023$WORKING_VERSION.coverage" NAME="WORKING VERSION Coverage Results" MODIFIED="1684322363266" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/working_version" />
+    <SUITE FILE_PATH="coverage/CO2023$WORKING_VERSION.coverage" NAME="WORKING VERSION Coverage Results" MODIFIED="1684331778732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/savingsAlgorithm" />
     <SUITE FILE_PATH="coverage/CO2023$new_attempt.coverage" NAME="new_attempt Coverage Results" MODIFIED="1684040434500" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/New Attempt" />
     <SUITE FILE_PATH="coverage/CO2023$main.coverage" NAME="main Coverage Results" MODIFIED="1683394188784" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/CO2023$Nonpienv.coverage" NAME="Nonpienv Coverage Results" MODIFIED="1681646562754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
-from collections import defaultdict
 @dataclass
 class Vehicle:
     v_id: int
     distance_traveled: int
-    vehicle_current_load: int
+    vehicle_cumalative_load: int
     farms_visited: list
     request_fullfilled: list
     vehicle_operation_cost: int
@@ -13,6 +12,18 @@ class Vehicle:
     tools_picked_up: dict[int, int] = field(default_factory=dict)
     tools_delivered: dict[int, int] = field(default_factory=dict)
     order_history: dict[int, tuple[int, int]] = field(default_factory=dict)
+    load_history: dict[int, int] = field(default_factory=dict)
+    def process_order(self, tool_type, amount):
+        if amount > 0:
+            if tool_type in self.tools_delivered:
+                self.tools_delivered[tool_type] += amount
+            else:
+                self.tools_delivered[tool_type] = amount
+        else:
+            if tool_type in self.tools_picked_up:
+                self.tools_delivered[tool_type] += amount
+            else:
+                self.tools_picked_up[tool_type] = amount
 def update_tools_in_vehicle(vehicle_list):
     new_tool_list = {}
     for vehicle in vehicle_list:
@@ -39,6 +50,6 @@ def multi_request_vehicles(vehicle_list):
 def large_vehicles(vehicle_list, init_depot, vehicle_capacity):
     smallest_tool = min(init_depot.tools.values(), key=lambda tool: tool.size).size
     large_request_vehicle_load = vehicle_capacity - smallest_tool
-    too_large_to_be_combined = [vehicle for vehicle in vehicle_list if vehicle.vehicle_current_load > large_request_vehicle_load]
+    too_large_to_be_combined = [vehicle for vehicle in vehicle_list if vehicle.vehicle_cumalative_load > large_request_vehicle_load]
     vehicle_list = [vehicle for vehicle in vehicle_list if vehicle not in too_large_to_be_combined]
     return vehicle_list, too_large_to_be_combined,smallest_tool

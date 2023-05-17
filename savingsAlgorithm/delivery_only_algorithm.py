@@ -2,8 +2,6 @@ from itertools import combinations
 import routing_functions
 import vehicle_functions
 import constraint_checkers
-import distance_functions
-import pandas as pd
 def is_farm_next_to_depot(vehicle,farm): # If time makes this faster since looping is inneffcient.
     if vehicle.farms_visited[1] == farm:
         return True
@@ -25,7 +23,7 @@ def dispatched_vehicle_locator(dispatch_list,farm):
             return vehicle
 def vehicle_with_sufficient_capacity_locator(dispatch_list,merge_capacity_required):
     for vehicle in dispatch_list:
-        if vehicle.vehicle_current_load >= merge_capacity_required:
+        if vehicle.vehicle_cumalative_load >= merge_capacity_required:
             return vehicle
 
 
@@ -85,7 +83,7 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                     new_vehicle = routing_functions.dispatch_vehicle(vehicle_i, vehicle_j,new_distance, new_load, new_route,distance_cost)
                     vehicle_list.remove(vehicle_i)
                     vehicle_list.remove(vehicle_j)
-                    linkage_requirement = vehicle_capacity-new_vehicle.vehicle_current_load
+                    linkage_requirement = vehicle_capacity-new_vehicle.vehicle_cumalative_load
                     existing_vehicle = vehicle_with_sufficient_capacity_locator(dispatch_list,linkage_requirement)
                     dispatch_list.append(new_vehicle)
                     if existing_vehicle is not None:
@@ -104,7 +102,7 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                 print(dispatched_i)
                 print(vehicle_j)
                 if can_pair_be_merged:
-                    linked_vehicle = route_functions.dispatch_vehicle(dispatched_i, vehicle_j, long_distance,
+                    linked_vehicle = routing_functions.dispatch_vehicle(dispatched_i, vehicle_j, long_distance,
                                                                       long_capacity,
                                                                       long_road, distance_cost)
                     dispatch_list.append(linked_vehicle)
@@ -114,7 +112,7 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                                                         vehicle_capacity,
                                                         max_trip_distance, '3bj', init_depot)
                 if can_pair_be_merged:
-                    linked_vehicle = route_functions.dispatch_vehicle(vehicle_i,dispatched_j, long_distance,
+                    linked_vehicle = routing_functions.dispatch_vehicle(vehicle_i,dispatched_j, long_distance,
                                                                       long_capacity,
                                                                       long_road, distance_cost)
                     dispatch_list.append(linked_vehicle)
@@ -123,7 +121,7 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                 can_pair_be_merged, long_distance,long_capacity, long_road = constraint_checkers.can_delivery_be_added_to_existing_route(vehicle_i, dispatched_j, distance_matrix, loc_i, loc_j,vehicle_capacity,
                     max_trip_distance, '3both', init_depot) ## If there is a mistake it is with distance functions
                 if can_pair_be_merged:
-                    linked_vehicle = route_functions.dispatch_vehicle(vehicle_i,dispatched_j, long_distance,
+                    linked_vehicle = routing_functions.dispatch_vehicle(vehicle_i,dispatched_j, long_distance,
                                                                       long_capacity,
                                                                       long_road, distance_cost)
                     dispatch_list.append(linked_vehicle)

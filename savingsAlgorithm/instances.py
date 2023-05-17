@@ -32,8 +32,6 @@ def makedf (instance):
                     instance.tools[r.toolID - 1].weight * r.toolCount]
     df.set_index('ID',inplace=True)
     return df
-
-
 def fileParser(instance, inputFile):
     with open(inputFile, 'r') as f:
         for line in f:
@@ -103,7 +101,6 @@ class Request:
 			return False
 		else:
 			return self.ID is request.ID
-
 class Tool(object):
 	def __init__(self, ID, weight, amount, cost):
 		self.ID = ID

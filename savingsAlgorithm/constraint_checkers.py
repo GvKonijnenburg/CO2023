@@ -1,7 +1,7 @@
 import distance_functions
 def can_two_deliveries_be_merged(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j, max_capacity, max_distance):
-    vehicle_i_current_load = vehicle_i.vehicle_current_load
-    vehicle_j_current_load = vehicle_j.vehicle_current_load
+    vehicle_i_current_load = vehicle_i.vehicle_cumalative_load
+    vehicle_j_current_load = vehicle_j.vehicle_cumalative_load
     new_vehicle_load = vehicle_i_current_load + vehicle_j_current_load
     if new_vehicle_load > max_capacity:
         return False, None, None
@@ -12,11 +12,18 @@ def can_two_deliveries_be_merged(vehicle_i, vehicle_j, distance_matrix, loc_i, l
     if new_distance > max_distance:
         return False, None, None
     return True, new_distance, new_vehicle_load
-
+def can_two_request_become_one(vehicle_i, vehicle_j, vehicle_capacity):
+    vehicle_i_current_load = vehicle_i.vehicle_cumalative_load
+    vehicle_j_current_load = vehicle_j.vehicle_cumalative_load
+    new_vehicle_load = vehicle_i_current_load + vehicle_j_current_load ### Maybe later add this to vehicle_functions
+    if new_vehicle_load > vehicle_capacity:
+        return False,None
+    else:
+        return True,new_vehicle_load
 
 def can_delivery_be_added_to_existing_route(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j, vehicle_capacity,
                                             max_trip_distance, merge_type, depot):
-    vehicle_capacity_after_merge = vehicle_i.vehicle_current_load + vehicle_j.vehicle_current_load
+    vehicle_capacity_after_merge = vehicle_i.vehicle_cumalative_load + vehicle_j.vehicle_cumalative_load
     if vehicle_capacity_after_merge > vehicle_capacity:
         return False, None, None, None
     if merge_type == "3bi":
