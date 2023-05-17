@@ -99,6 +99,57 @@ def can_a_pick_up_and_delivery_be_paired(vehicle_i, vehicle_j, vehicle_capacity,
 
     return True, new_distance,new_tools_in_vehicle
 
+def initial_dispatch_checker(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j,
+                                                 vehicle_capacity,max_trip_distance,depot,daily_order_list):
+
+    requests_instead_of_farms = [vehicle_i.request_fullfilled] + [vehicle_j.request_fullfilled]
+    order_list  = [vehicle_i.order_history] +[vehicle_j.order_history]
+    request_problem_because_we_cant_track_farms = [item for sublist in order_list for item in (sublist if isinstance(sublist, list) else [sublist])]
+    print(request_problem_because_we_cant_track_farms)
+    tool_needed = {}
+    vehicle_load_tracker = 0
+    for i in range(len(request_problem_because_we_cant_track_farms) - 1):
+        visit_1 = request_problem_because_we_cant_track_farms[i]
+        visit_2 = request_problem_because_we_cant_track_farms[i + 1]
+        tool_type_v1 = visit_1[1]
+        tool_type_v2 = visit_2[1]
+        tool_amount_v1 = visit_1[2]
+        tool_amount_v2 = visit_2[2]
+        tool_type_v1_size = depot.tools[tool_type_v1].size
+        tool_type_v2_size = depot.tools[tool_type_v2].size
+        if tool_type_v1 == tool_type_v2:
+            if tool_amount_v1 <0 and tool_type_v2 > 0:
+                if tool_type_v1 in tool_needed:
+                    difference = tool_amount_v1 + tool_amount_v2
+                    vehicle_load_tracker += difference*tool_type_v1_size
+                    tool_needed[tool_type_v1] +=difference
+                else:
+                    tool_needed[tool_type_v1] = difference
+                    vehicle_load_tracker += difference * tool_type_v1_size
+        if tool_type_v1 in tool_needed:
+            tool_needed[tool_type_v1] += tool_amount_v1
+            vehicle_load_tracker += abs(tool_amount_v1 * tool_type_v1_size)
+        if tool_type_v1 not in tool_needed:
+                tool_needed[tool_type_v1] = tool_amount_v1
+                vehicle_load_tracker += abs(tool_amount_v1 * tool_type_v1_size)
+        if tool_type_v2 in tool_needed:
+            tool_needed[tool_type_v2] += tool_amount_v2
+            vehicle_load_tracker += abs(tool_amount_v2 * tool_type_v2_size)
+        if tool_type_v1 not in tool_needed:
+                tool_needed[tool_type_v2] = tool_amount_v2
+                vehicle_load_tracker += abs(tool_amount_v2 * tool_type_v2_size)
+
+
+        print(tool_needed)
+        print(vehicle_load_tracker)
+        print('vehicle_load_tracker')
+
+    print(order_list)
+    print('check above')
+
+
+    return None,None,None
+
 
 
 def get_max_positive_change(amount_requested):

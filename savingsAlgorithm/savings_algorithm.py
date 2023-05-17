@@ -5,6 +5,20 @@ import routing_functions
 import vehicle_functions
 import constraint_checkers
 import distance_functions
+def vehicle_locator(vehicle_list,loc_i,loc_j):
+    vehicle_i,vehicle_j = None,None
+    for vehicle in vehicle_list:
+        if vehicle.farms_visited[1]==loc_i:
+            vehicle_i = vehicle
+        if vehicle.farms_visited[-2]==loc_j:
+            vehicle_j = vehicle
+        if vehicle_i and vehicle_j is not None:
+            break
+    return vehicle_i,vehicle_j
+def dispatched_vehicle_locator(dispatch_list,farm):
+    for vehicle in dispatch_list:
+        if farm in vehicle.farms_visited:
+            return vehicle
 
 def compute_savings_matrix(distance_matrix, vehicle_list,distance_cost):
     savings_list = []
@@ -70,7 +84,6 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
     orders_for_day_one = master_order_list[master_order_list['route_id'].isin(requests_for_day_one)]
     routes_for_day_one,master_depot,smallest_tool = delivery_only_algorithm.first_day_algo(orders_for_day_one,init_depot,distance_cost,
         vehicle_operation_cost,vehicle_capacity,distance_matrix,max_trip_distance)
-    print(orders_for_day_one)
     final_vehicles[1] = routes_for_day_one
     for day in range(2, max(master_order_list['order_day']) + 1):
         master_depot.start_new_day()
@@ -90,7 +103,6 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
             for farm, matching_vehicles in multi_request_vehicles.items():
                 for i in range(len(matching_vehicles) - 1): ### Probable redundand code, if a triple never occurs
                     vehicle_i = matching_vehicles[i]
-                    # print(vehicle1)
                     for j in range(i + 1, len(matching_vehicles)):
                         vehicle_j= matching_vehicles[j]
                         can_these_two_be_merged,new_vehicle_load = constraint_checkers.can_two_request_become_one(vehicle_i, vehicle_j, vehicle_capacity)
@@ -103,6 +115,7 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
 
             vehicle_list, large_requests, smallest_tool = vehicle_functions.large_vehicles(initial_routes, init_depot,
                                                                                            vehicle_capacity)
+            print(vehicle_list)
             dispatched_vehicles = []
             pick_up_and_delivery_combinations_to_merge = inventory_savings_by_combining_large_pd_del_request(large_requests,distance_matrix,master_depot)
             for pair in pick_up_and_delivery_combinations_to_merge:
@@ -112,15 +125,31 @@ def savings_algo(order_vehicle_information, distance_matrix, init_depot, vehicle
                     new_route = [master_depot.loc,pick_up.farms_visited[1], delivery.farms_visited[1],master_depot.loc]
                     request_fullfilled = [pick_up.request_fullfilled] + [delivery.request_fullfilled]
                     route_cost = new_distance*distance_cost
-                    combined_dict = {**pick_up.order_history, **delivery.order_history}
+                    order_list = pick_up.order_history+delivery.order_history
                     new_vehicle = vehicle_functions.Vehicle(v_id=pick_up.v_id,distance_traveled=new_distance,vehicle_cumalative_load=0,
                                                             farms_visited=new_route,request_fullfilled=request_fullfilled,vehicle_operation_cost=pick_up.vehicle_operation_cost,route_cost=route_cost,
-                                                            tools_in_vehicle=new_tools_in_vehicle, tools_picked_up={},tools_delivered={},order_history=combined_dict,load_history=pick_up.load_history)
+                                                            tools_in_vehicle=new_tools_in_vehicle, tools_picked_up={},tools_delivered={},order_history=order_list,load_history=pick_up.load_history)
                     dispatched_vehicles.append(new_vehicle)
                     large_requests.remove(pick_up)
                     large_requests.remove(delivery)
                 cut_off_pairs = compute_savings_matrix(distance_matrix, vehicle_list, distance_cost)
-                print(cut_off_pairs)
+                dispatch_list = []
+
+                for pair in cut_off_pairs:
+                    loc_i, loc_j = pair[0], pair[1]
+                    vehicle_i, vehicle_j = vehicle_locator(vehicle_list, loc_i, loc_j)
+                    dispatched_i = dispatched_vehicle_locator(dispatch_list, loc_i)
+                    dispatched_j = dispatched_vehicle_locator(dispatch_list, loc_j)
+                    if vehicle_i is not None and vehicle_j is not None:
+                        if len(vehicle_i.farms_visited) == 3 and len(vehicle_j.farms_visited) == 3:  ### This is Case 3a from Step 2 in the link I send, because single routes only have length of 3's
+                            print(vehicle_i)
+                            print(vehicle_j)
+                            print(loc_i,loc_j)
+                            can_pair_be_merged, new_distance, new_load = constraint_checkers.initial_dispatch_checker(
+                                vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j, vehicle_capacity,
+                                max_trip_distance,master_depot,daily_orders_to_complete)
+
+                            break
 
                 break
 

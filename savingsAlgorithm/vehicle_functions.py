@@ -13,7 +13,7 @@ class Vehicle:
     tools_in_vehicle: dict[int, int] = field(default_factory=dict)
     tools_picked_up: dict[int, int] = field(default_factory=dict)
     tools_delivered: dict[int, int] = field(default_factory=dict)
-    order_history: dict[int, tuple[int, int]] = field(default_factory=dict)
+    order_history: list[tuple[int, int, int]] = field(default_factory=list)
     load_history: dict[int, int] = field(default_factory=dict)
     def process_order(self, tool_type, amount):
         if amount > 0:
