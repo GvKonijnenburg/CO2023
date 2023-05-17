@@ -9,7 +9,7 @@ def write_output(global_dict, tools, coordinates, requests, solution, instance_f
     for (day_idx, cars_day) in enumerate(solution.cars_on_day):
         ## keep track of:
         # each day: vehicle index + trip by that vehicle to which farm + rq id of that farm
-        #### '- rq id' if pickup else delivery
+        #### '-rq id' if pickup else delivery
         # each day: number of vehicles in used
         output_str += 'DAY = {}\n'.format(day_idx + 1) ## why is day a decision var
         output_str += 'NUMBER_OF_VEHICLES = {}\n'.format(len(cars_day)) ## number of cars in sol

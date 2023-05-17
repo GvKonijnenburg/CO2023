@@ -16,9 +16,8 @@ def files_in_folder(folder):
     return returnvalue
 
 if __name__ == "__main__":
-    folder = 'C:/Git/Combinatorial Optimization/instances/'
-    instances = files_in_folder(folder)
-   
+    folder = "G:/My Drive/VU Amsterdam/BA3/Combinarorial Optimization/CO2023/instances/"
+    instances = ['challenge_r100d10_1.txt']
     # replace instances with single file if you only want to test a single file
     # instances = ['challenge_r100d10_1.txt']
     

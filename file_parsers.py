@@ -22,10 +22,10 @@ def file_parser(inputfile):
         for line in f:
             line.strip()
             if "DATASET" in line:
-                global_dict["DATASET"] = int(line.split(" = ")[1])
+                global_dict["DATASET"] = str(line.split(" = ")[1])
                 continue
             elif "NAME" in line:
-                global_dict["NAME"] = int(line.split(" = ")[1])
+                global_dict["NAME"] = str(line.split(" = ")[1])
                 continue
             elif "DAYS" in line:
                 global_dict["DAYS"] = int(line.split(" = ")[1])
