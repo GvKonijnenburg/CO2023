@@ -40,6 +40,17 @@ def dispatch_vehicle(vehicle_i, vehicle_j,new_distance, vehicle_current_load, ne
                           distance_traveled=new_distance,vehicle_cumalative_load=vehicle_current_load,route_cost=total_costs,
                                             tools_delivered=tools_in_vehicle,tools_picked_up={},order_history=order_history)
     return new_vehicle
+
+def dispatch_vehicle_pd(vehicle_i, vehicle_j,new_distance, vehicle_current_load, new_route,distance_cost,tools_in_vehicle,depot):
+    request_fullfilled = [vehicle_i.request_fullfilled]+[vehicle_j.request_fullfilled]
+    total_costs = new_distance*distance_cost+vehicle_i.vehicle_operation_cost
+    order_history = [vehicle_i.order_history] + [vehicle_j.order_history]
+
+    new_vehicle = vehicle_functions.Vehicle(v_id = vehicle_i.v_id,vehicle_operation_cost=vehicle_i.vehicle_operation_cost,
+                          tools_in_vehicle=tools_in_vehicle,farms_visited=new_route,request_fullfilled=request_fullfilled,
+                          distance_traveled=new_distance,vehicle_cumalative_load=vehicle_current_load,route_cost=total_costs,
+                                            tools_delivered=tools_in_vehicle,tools_picked_up={},order_history=order_history)
+    return new_vehicle
 def initial_pick_up_and_delivery_routes(order_information,depot, distance_cost, vehicle_operation_cost):
     initial_routes = []
     for order in order_information.itertuples():

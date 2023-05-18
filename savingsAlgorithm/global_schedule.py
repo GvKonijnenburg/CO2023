@@ -68,7 +68,10 @@ def create_ILP_model(days, toolAmount, requestsDf):
         return model.toolEndOfDay[j] == \
             model.toolEndOfDay[j-1]-sum(model.toolAmountRequest[i]*(model.x[i,j]-model.y[i,j]) for i in model.i)
     model.inventory = pyo.Constraint(model.j, rule = inventoryDay)
+    def maxdeli(model, j):
+        return sum(model.toolAmountRequest[i] * (model.x[i, j]) for i in model.i) <= model.toolEndOfDay[j - 1]
 
+    model.maxdeli = pyo.Constraint(model.j, rule=maxdeli)
     model.objective = pyo.Objective(expr=model.toolEndOfDay[days], sense=pyo.minimize)
     return model
 

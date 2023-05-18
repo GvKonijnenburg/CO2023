@@ -10,7 +10,14 @@ import savings_algorithm
 import vehicle_functions
 from dataclasses import field
 
-
+def flatten_list(my_list):
+	returnvalue = []
+	for i in range(len(my_list)):
+		if isinstance(my_list[i], list):
+			returnvalue += (flatten_list(my_list[i]))
+		else:
+			returnvalue.append(my_list[i])
+	return returnvalue
 
 # import file_parser
 # import Instance_test
@@ -23,11 +30,9 @@ def print_solution(dataset, instance_name, vehicles_dict,instance):
     with open(f"{instance}_solution.txt", "w") as file:
         file.write(f"DATASET = {dataset}\n")
         file.write(f"NAME = {instance_name}\n\n")
-
         for day, vehicles in vehicles_dict.items():
             file.write(f"DAY = {day}\n")
             file.write(f"NUMBER_OF_VEHICLES = {len(vehicles)}\n")
-
             for i, vehicle in enumerate(vehicles, start=1):
                 route = ' '.join(map(str, [0] + vehicle.request_fullfilled + [0]))
                 file.write(f"{i} R {route}\n")
@@ -76,32 +81,16 @@ if __name__ == "__main__":
         vehicle_functions.Vehicle.distance_cost = field(default=distance_cost)
         vehicle_functions.Vehicle.vehicle_operation_cost = field(default=distance_cost)
         order_vehicle_information = order_functions.order_vehicle_information(master_order_list, init_depot,distance_mat)
-
-
         savings_algo_routes = savings_algorithm.savings_algo(order_vehicle_information, distance_mat, init_depot,
                                                         vehicle_capacity, max_distance,
                                                         vehicle_operation_cost, distance_cost,scheduled_requests)        # print('check here')
 
         pd.set_option('display.max_columns', None)
         pd.set_option('display.max_rows', None)
-
-
-        # for i in sorted(sche.schedulePerDay):
-        #     print(sche.schedulePerDay[i])
-        #     print(sche.max_daily_use)
-            # print(simulation.requestsDf)
-
-
-    # master_order_list = order_functions.master_order_list(requests)
-    # tool_list = [depot_functions.Tool(**tool_info) for tool_info in tools.values()]
-    # init_depot = depot_functions.Depot(tools={tool.id: tool for tool in tool_list}, loc=depot_loc)
-    # distance_mat = distance_functions.distance_matrix(coordinates)
-    # # #Savings Algo
-    # order_vehicle_information = order_functions.order_vehicle_information(master_order_list, init_depot, distance_mat)
-    # savings_algo_routes = savings_algo.savings_algo(order_vehicle_information, distance_mat, init_depot, vehicle_capacity, max_distance,
-    #                                  vehicle_operation_cost,distance_cost)
-    # for key in savings_algo_routes:
-    #     for vehicle in savings_algo_routes[key]:
-    #         vehicle.request_fullfilled = flatten(vehicle.request_fullfilled)
-    # print_solution(dataset, name, savings_algo_routes, instance)
+        # print(savings_algo_routes)
+        answer = savings_algo_routes[0]
+        for key in answer:
+            for vehicle in answer[key]:
+                vehicle.request_fullfilled = flatten_list([vehicle.request_fullfilled])
+        print_solution(dataset, name, answer, case)
         break

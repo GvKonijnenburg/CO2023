@@ -85,7 +85,6 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                     vehicle_list.remove(vehicle_j)
                     linkage_requirement = vehicle_capacity-new_vehicle.vehicle_cumalative_load
                     existing_vehicle = vehicle_with_sufficient_capacity_locator(dispatch_list,linkage_requirement)
-                    dispatch_list.append(new_vehicle)
                     if existing_vehicle is not None:
                         can_pair_be_merged, long_distance,long_capacity, long_road = constraint_checkers.can_delivery_be_added_to_existing_route(existing_vehicle, new_vehicle, distance_matrix, loc_i, loc_j, vehicle_capacity, max_trip_distance,'2B',init_depot)
                         if can_pair_be_merged:
@@ -99,8 +98,6 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                 can_pair_be_merged, long_distance,long_capacity, long_road = constraint_checkers.can_delivery_be_added_to_existing_route(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j,
                                                         vehicle_capacity,
                                                         max_trip_distance, '3bi', init_depot)
-                print(dispatched_i)
-                print(vehicle_j)
                 if can_pair_be_merged:
                     linked_vehicle = routing_functions.dispatch_vehicle(dispatched_i, vehicle_j, long_distance,
                                                                       long_capacity,
@@ -124,7 +121,10 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
                     linked_vehicle = routing_functions.dispatch_vehicle(vehicle_i,dispatched_j, long_distance,
                                                                       long_capacity,
                                                                       long_road, distance_cost)
+
                     dispatch_list.append(linked_vehicle)
+
+
 
 
     #### Dealing with left over pairs. I assume that the distance is never equal
@@ -135,5 +135,12 @@ def first_day_algo(orders_day_1,init_depot,distance_cost,
     #     print('implement this when you arive at the instance')
 
     ### to test this for now I give the remaining vehicles their own route as suggested by the MIT implementation
-    final_daily_route_list = large_requests + dispatch_list + vehicle_list
+
+
+    final_daily_route_list = large_requests + dispatch_list
+
+    print(large_requests)
+    print(dispatch_list)
+    print(vehicle_list)
+
     return final_daily_route_list, init_depot, smallest_tool

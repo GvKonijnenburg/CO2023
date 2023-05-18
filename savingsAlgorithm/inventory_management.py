@@ -23,6 +23,6 @@ class Depot:
     def inventory_check(self, tool_id, amount):
         return self.inventory_current.get(tool_id, 0) >= amount
     def tool_reserved_for_delivery(self, tool_id, amount):
-        self.inventory_current[tool_id] -= amount
+            self.inventory_current[tool_id] -= amount
 
 
