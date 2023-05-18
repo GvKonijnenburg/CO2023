@@ -26,29 +26,31 @@ def check_arcs(vehicle_i,vehicle_j,depot):
         tool_amount_v2 = visit_2[2]
         tool_type_v1_size = depot.tools[tool_type_v1].size
         tool_type_v2_size = depot.tools[tool_type_v2].size
-
+        
         if tool_type_v1 == tool_type_v2:
             if tool_amount_v1 < 0 and tool_type_v2 > 0:
                 difference = tool_amount_v1 + tool_amount_v2
                 if tool_type_v1 in tool_needed:
-                    vehicle_load_tracker += difference * tool_type_v1_size
+                    vehicle_load_tracker += abs(difference * tool_type_v1_size)
                     tool_needed[tool_type_v1] += difference
                 else:
                     tool_needed[tool_type_v1] = difference
-                    vehicle_load_tracker += difference * tool_type_v1_size
+                    vehicle_load_tracker += abs(difference * tool_type_v1_size)
+
         if tool_type_v1 in tool_needed:
             tool_needed[tool_type_v1] += tool_amount_v1
             vehicle_load_tracker += abs(tool_amount_v1 * tool_type_v1_size)
-        if tool_type_v1 not in tool_needed:
+        else:
             tool_needed[tool_type_v1] = tool_amount_v1
             vehicle_load_tracker += abs(tool_amount_v1 * tool_type_v1_size)
+        
         if tool_type_v2 in tool_needed:
             tool_needed[tool_type_v2] += tool_amount_v2
             vehicle_load_tracker += abs(tool_amount_v2 * tool_type_v2_size)
-        if tool_type_v1 not in tool_needed:
+        else:
             tool_needed[tool_type_v2] = tool_amount_v2
             vehicle_load_tracker += abs(tool_amount_v2 * tool_type_v2_size)
-    return tool_needed,vehicle_load_tracker,order_list
+    return tool_needed, vehicle_load_tracker, order_list
 
 
 
@@ -69,6 +71,7 @@ def can_two_request_become_one(vehicle_i, vehicle_j, vehicle_capacity):
     vehicle_i_current_load = vehicle_i.vehicle_cumalative_load
     vehicle_j_current_load = vehicle_j.vehicle_cumalative_load
     new_vehicle_load = vehicle_i_current_load + vehicle_j_current_load ### Maybe later add this to vehicle_functions
+    
     if new_vehicle_load > vehicle_capacity:
         return False,None
     else:
@@ -165,6 +168,8 @@ def initial_dispatch_checker(vehicle_i, vehicle_j, distance_matrix, loc_i, loc_j
     if new_distance > max_trip_distance:
         return False, None, None,None,None
     new_tools_in_vehicle = vehicle_functions.update_tools_in_vehicle([vehicle_i, vehicle_j])
+    # ISSUE HERE: we do not check if the new_tools_in_vehicle is over capacity
+
     for tool_id, amount_requested in new_tools_in_vehicle.items():
         if not depot.inventory_check(tool_id, amount_requested):
             return False, None, None,None,None
